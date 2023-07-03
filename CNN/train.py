@@ -26,8 +26,6 @@ from methods import Net, train_neural_network_pytorch, predict_pytorch
 
 from sklearn.model_selection import train_test_split
 
-# In[19]:
-
 
 # Initialize the network
 net = Net(INPUT_SIZE, HIDDEN_SIZES, OUTPUT_SIZE)
@@ -51,10 +49,6 @@ data = pd.read_csv(os.path.join(path, "transactions.csv.zip"))
 X = data.drop(columns=["Time", "Class"])
 y = data["Class"]
 
-
-# In[21]:
-
-
 x_train_data, x_test_data, y_train_data, y_test_data = train_test_split(
     X, y, test_size=0.25, shuffle=True
 )
@@ -64,9 +58,6 @@ y_train_data = np.array(y_train_data).reshape(-1, 1)
 
 print(x_train_data.shape)
 print(y_train_data.shape)
-
-# In[ ]:
-
 
 train_neural_network_pytorch(
     net,
@@ -79,18 +70,7 @@ train_neural_network_pytorch(
 
 torch.save(net.state_dict(), "model.pth")
 
-# In[ ]:
-net = Net(INPUT_SIZE, HIDDEN_SIZES, OUTPUT_SIZE)
-
-net.load_state_dict(torch.load("model.pth"))
-
-# In[ ]:
-
-
 output = predict_pytorch(net, np.array(x_test_data))
-
-
-# In[ ]:
 
 
 wrong_output_count = 0
@@ -117,5 +97,3 @@ print(f"frauds: {frauds}")
 print(f"frauds_detected: {frauds_detected}")
 print(f"frauds_right_detected: {frauds_right_detected}")
 print(f"frauds detected ratio: {frauds_right_detected / frauds}")
-
-# In[ ]:

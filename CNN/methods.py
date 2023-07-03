@@ -94,9 +94,6 @@ def train_neural_network_pytorch(
     print("Finished Training")
 
 
-# In[5]:
-
-
 def predict_pytorch(net, X):
     """
     Function for producing network predictions
