@@ -1,12 +1,8 @@
 import pandas as pd
 import numpy as np
-import os
-from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-import pathlib
-import torch
-
+import joblib
 from sklearn.utils import resample
 from imblearn.over_sampling import SMOTE
 
@@ -16,19 +12,15 @@ from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
+def train_and_save_model(load_model=False):
+    path = "../transactions.csv.zip"
+    train_data = pd.read_csv(path)
+    X_train = train_data.drop(columns="Class")
+    y_train = train_data["Class"]
 
+    X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.33, random_state=42)
 
-
-# --- Read data and split into train and test set ---
-
-path = "/data/mlproject22" if os.path.exists("/data/mlproject22") else ".."
-train_data = pd.read_csv(os.path.join(path, "transactions.csv.zip"))
-X_train = train_data.drop(columns = "Class")
-y_train = train_data["Class"]
-
-X_train, X_test, y_train, y_test = train_test_split(X_train, y_train, test_size=0.33, random_state=42)
-
-def undersample_data(X_train, y_train, random_state=0, fraud_ratio=0.02):
+    def undersample_data(X_train, y_train, random_state=0, fraud_ratio=0.02):
     # Combine X_train and y_train into a single dataframe
     train_data = pd.concat([X_train, y_train], axis=1)
 
@@ -126,4 +118,18 @@ for fraud_ratio in [0.002, 0.005, 0.01, 0.025, 0.05, 0.1, 0.15, 0.2, 0.25, 0.4, 
     print("undersampling,", fraud_ratio, ",", end="")
     print_accuracy(model_undersampled, X_test, y_test, csv=True)
 
+if load_model:
+        # Load the trained model from file
+        model = joblib.load("./model.pkl")
+else:
+model = LogisticRegression(solver='liblinear', random_state=0, max_iter=1000)
+model.fit(X_train, y_train)
+print(model.predict_proba(X_test))
+prediction = model.predict(X_test)
+print(prediction)
+# print number of predictions, which are 1
+print(np.sum(prediction))
+print(model.score(X_test, y_test))
 
+
+train_and_save_model(load_model=True)
